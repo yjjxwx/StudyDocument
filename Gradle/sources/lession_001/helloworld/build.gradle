@@ -1,0 +1,19 @@
+println name
+println project.name
+println project.path
+println project.projectDir
+println project.buildDir
+println group
+println version
+println ant
+
+def dest = "Alex Liu";
+println dest;
+
+ext {
+    group = "LewaTek";
+    version = "1.2";
+}
+
+println ext.group;
+println ext.version;

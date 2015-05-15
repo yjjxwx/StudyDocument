@@ -332,5 +332,6 @@ HDR(4L2_CID_WIDE_DYNAMIC_RANGE), 防抖(STABILIZATION),ISO, 测光方式, 场景
 
 
 [1]:http://www.linuxtv.org/downloads/legacy/video4linux/API/V4L2_API/spec-single/v4l2.html
+[2]:http://linuxtv.org/downloads/v4l-dvb-apis/
 
 [p1]:V4L2.png

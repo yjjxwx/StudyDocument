@@ -58,8 +58,175 @@ V4L2定义了一套事件机制当控制的值发生改变时来通知应用程�
 |V4L2_CID_CHROMA_AGC|boolean|色度自动增益控制|
 |V4L2_CID_CHROMA_GAIN|integer|调整色度增益控制(当AGC不可用时有效)|
 |V4L2_CID_COLOR_KILLER|boolean|开启消色(在微弱的视频信号下强制拍摄黑白图像)|
-|V4L2_CID_COLORFX|enum|选择一个颜色滤镜.以下的是被预定义的值.<code> `V4L2_COLORFX_NONE` 颜色滤镜不可用.<br/>
-`V4L2_COLORFX_ANITIQUE` 老龄化效果(老照片)效果.</code>
+|V4L2_CID_COLORFX|enum|选择一个颜色滤镜.以下的是被预定义的值. `V4L2_COLORFX_NONE` 颜色滤镜不可用.  `V4L2_COLORFX_ANITIQUE` 老龄化效果(老照片)效果.  `V4L2_COLORFX_ART_FREEZE` 霜效果.   `V4L2_COLORFX_AQUA` 水效果.  `V4L2_COLORFX_BW` 黑白效果.  `V4L2_COLORFX_EMBOSS` 浮雕, 高亮和阴影替换过亮或是过暗的边界并且低对比度的区域被设置为灰色.  `V4L2_COLORFX_GRASS_GREEN` 草绿色.    `V4L2_COLORFX_NEGATIVE` 负片效果(底片).  `V4L2_COLORFX_SEPIA` 深褐色调.  `V4L2_COLORFX_SKETCH`  素描效果.    `V4L2_COLORFX_SKIN_WHITEN` 美白动画.  `V4L2_COLORFX_SKY_BLUE` 蓝色开空.  `V4L2_COLORFX_SOLARIZATION` 负感作用, 图像中的部分色调逆转, 只一高于或是低于某一个确定的阈值才会被逆转.  `V4L2_COLORFX_SILHOUETTE` 剪影.  `V4L2_COLORFX_VIVID`  生动.  `V4L2_COLORFX_SET_CBCR`  CB和CR的色度分量是`V4L2_CID_COLORFX_CBCR` 控制所决定的固定系数代替. |
+|V4L2_CID_COLORFX_CBCR|integer|定义Cb和Cr的替代系数. 32位的值[7:0]位被解释为Cr分量, [15:8]位被解释为Cb分量, [31:16]位必须为零.|
+|V4L2_CID_AUTOBRIGHTNESS|boolean|开启自动亮度|
+|V4L2_CID_ROTATE|integer|给定一个角度旋转图片. 统一的角度是90, 270, 180. 旋转图片90和270将会反转显示器的高度和宽度. 没有必要来跟据旋转角度通过`VIDIOC_S_FMT`来重新设定一个图片新的高度和宽度.|
+|V4L2_CID_BG_COLOR|integer|为当前的输出设备设置一个背景颜色. 背景颜色需要指定为RGB24的格式. 给定的32位值的0~7位被解释为红色分量, 8~15位被解释为绿色分量, 16~23 被解释为蓝色分量, 24~31被必须为0.|
+|V4L2_CID_ILLUMINATORS_1|boolean|开关照明器1(常用于显微镜)|
+|V4L2_CID_ILLUMINATORS_2|boolean|开关照明器2(常用于显微镜)|
+|V4L2_CID_MIN_BUFFERS_FOR_CAPTURE|integer|这是一个应用程序可读取的只读控制, 被用于提示设置到`REQBUFS`中拍摄缓冲区的数量. 这个值是保证硬件能够正常工作的最小的拍照缓冲区数量值|
+|V4L2_CID_MIN_BUFFERS_FOR_OUTPUT|integer| 这是一个应用程序可读取的只读控制, 被用于提示设置到`REQBUFS`中输出缓冲区的数量. 这个值是保证硬件能够正常工作的最小的输出缓冲区数量值|
+|V4L2_CID_ALPHA_COMPONENT|integer|设置颜色的Alpha分量. 当一个捕获设备(或是一个mem-to-mem的设备捕获队列)产生一帧的数据格式包含了一个Alpah的颜色分量(例如 RGB图像格式的打包) 并且Alpha的值没有被设备(或是mem-to-mem设备)所定义, 这个控制将会为所有的像素填充Alpha分量值. 当输出设备接收一帧的数据并且这些数据没有包含Alpha分量, 并且设备支持Alpha通道处理, 这个控制会为所有的输出像素填充Alpha分量值.|
+|V4L2_CID_LASTP1|  |预定义控制ID的结束(与V4L2_CID_ALPHA_COMPONENT + 1的值相等).|
+|V4L2_CID_PRIVATE_BASE| |第一个自定义的控制ID. 应用程序应该检查驱动程序的名称和版本来具体实现控制,详情请查看**查询功能**章节.|
+
+应用程序可以使用`VIDIOC_QUERYCTRL`和`VIDIOC_QUERYMENU` ioctl 来枚举可用的控制, 使用`VIDIOC_G_CTRL`和`VIDIOC_S_CTRL`来查询和设置相应控制的值.
+当设备有一个或是多个控制时, 驱动必须实现`VIDIOC_QUERYCTRL`,`VIDIOC_G_CTRL`,'VIDIOC_S_CTRL' ioctl, 当设备有一个或是多个菜单类型时,驱动必须实现
+`VIDIOC_QUERYMENU` ioctl.
+
+####例 1.8. 枚举所有的用户控制选项 ####
+
+```c
+struct v4l2_queryctrl queryctrl;
+struct v4l2_querymenu querymenu;
+
+static void enumerate_menu(void)
+{
+    printf(" Menu items: \n");
+    memset(&querymenu, 0, sizeof(querymenu));
+    querymenu.id = queryctrl.id;
+
+    for (querymenu.index = querymenu.mininum;
+            querymenu.index <= queryctrl.maximum; querymenu.index++) {
+        if (0 == ioctl(fd, VIDIOC_QUERYMENU, &querymenu)) {
+            printf(" %sn", querymenu.name);
+        }
+    }
+}
+
+memset(&queryctrl, 0, sizeof(queryctrl));
+
+for (queryctrl.id = V4L2_CID_BASE;
+        queryctrl.id < V4L2_CID_LASTP1;
+        queryctrl.id++) {
+
+    if (0 == ioctl(fd, VIDIOC_QUERYCTRL,
+        &queryctrl)) {
+            if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED) {
+                continue;
+            }
+            printf("Control %s\n", queryctrl.name);
+
+            if (queryctrl.type == V4L2_CTRL_TYPE_MENU) {
+                enumerate_menu();
+            }
+    } else {
+        if (errno == EINVAL) {
+            continue;
+        }
+        perror("VIDIOC_QUERYCTRL");
+        exit(EXIT_FAILURE);
+    }
+}
+
+for (queryctrl.id = V4L2_CID_PRIVATE_BASE;;
+        queryctrl.id++) {
+    if (0 == ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl)) {
+        if (queryctrl.flag & V4L2_CTRL_FLAG_DISABLED) {
+            continue;
+        }
+
+        printf("Control %s\n", queryctrl.name);
+
+        if (queryctrl.type == V4L2_CTRL_TYPE_MENU) {
+            enumerate_menu();
+        }
+    }
+}
+
+```
+####例 1.9. 枚举所有的用户控制选项(可选)####
+```c
+memset(&queryctrl, 0, sizeof(queryctrl));
+
+queryctrl.id = V4L2_CTRL_CLASS_USER | V4L2_CTRL_NEXT_CTRL;
+while (0 == ioctl(fd, VIDIOC_QUERCTRL, &queryctrl)) {
+    if (V4L2_CTRLID2CLASS(queryctrl.id) != V4L2_CTRL_CLASS_USER) {
+        break;
+    }
+
+    if (queryctrl.flag & V4L2_CTRL_FLAG_DISABLED) {
+        continue;
+    }
+    printf("Control %s\n", queryctrl.name);
+
+    if (queryctrl.type == V4L2_CTRL_TYPE_MENU) {
+        enumerate_menu();
+    }
+
+    queryctrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
+}
+
+if (errno != EINVAL) {
+    perror("VIDIOC_QUERYCTRL");
+    exit(EXIT_FAILURE);
+}
+
+```
+####例 1.10 改变控制####
+```C
+struct v4l2_queryctrl queryctrl;
+struct v4l2_control control;
+
+memset(&queryctrl, 0, sizeof(queryctrl));
+queryctrl.id = V4L2_CID_BRIGHTNESS;
+
+if (-1 == ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl)) {
+
+    if (errno != EINVAL) {
+        perror("VIDIOC_QUERYCTRL");
+        exit(EXIT_FAILURE);
+    } else {
+        printf("V4L2_CID_BRIGHTNESS is not supported\n");
+
+    } else if (queryctrl.flag & V4L2_CTRL_FLAG_DISABLED) {
+        printf("V4L2_CID_BRIGHTNESS is not supported\n");
+    } else {
+        memset(&control, 0, sizeof(control));
+        control.id = V4L2_CID_BRIGHTNESS;
+        control.value = queryctrl.default_value;
+        if (-1 == ioctl(fd, VIDIOC_S_CTRL, &control)) {
+            perror("VIDIOC_S_CTRL");
+            exit(EXIT_FAILURE);
+        }
+    }
+}
+
+memset(&control, 0, sizeof(control));
+control.id = V4L2_CID_CONTRAST;
+
+if (0 == ioctl(fd, VIDIOC_G_CTRL, &control)) {
+    control.value += 1;
+    /*The driver may clamp the value of return ERANGE, ignored here*/
+    if (-1 == ioctl(fd, VIDIOC_S_CTRL, &control
+            && errno != ENAME) {
+        perror("VIDIOC_S_CTRL");
+        exit(EXIT_FAILURE);
+    }
+    /* Ignore if V4L2_CID_CONTRAST is unsupported */
+} else if (errno != EINVAL) {
+    perror("VIDIOC_G_CTRL");
+    prror("VIDIOC_G_CTRL");
+    exit(EXIT_FAILURE);
+}
+
+control.id = V4L2_CID_AUDIO_MUTE;
+control.value = 1;
+
+/* Errors ignored */
+ioctl(fd,VIDIOC_S_CTRL, &control);
+
+```
+
+
+
+
+
+
+
+
+
 
 
 

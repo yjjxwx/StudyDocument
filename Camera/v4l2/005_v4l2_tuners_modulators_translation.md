@@ -1,5 +1,5 @@
-###调谐器和调节器###
-####调谐器####
+### 调谐器和调节器
+#### 调谐器
 视频输入设备至少有一个调谐器来解调RF信号. 每一个调谐器至少与一个视频输入相关联, 这依赖于连接到调谐器上RF连线的数量.
 通过调用`VIDIOC_ENUMINPUT` ioctl 返回的`v4l2_input`结构体中的`type`属性被设置为`V4l2_INPUT_TYPE_TUNER`,
 `tuner`属性包含了调谐器的索引数.
@@ -11,7 +11,7 @@ ioctl 查询返回的`v4l2_tuner`结构体中包含了可用的信息状态信�
 即使数量不止一个. 使用哪一个调谐器是由当前视频输入来独立决定的. 当设备有一个或是多个调谐器时,驱动必须要支持所有的`ioctl`
 并且设置通过`VIDIOC_QUERYCAP`ioctl返回的`v4l2_capability`结构体中的`V4l2_CAP_TUNER`标记.
 
-####调节器####
+#### 调节器
 
 视频输出设备至少要有一个调制器, 用来为辐射或是连接到电视或视频记录器的天线输入端调制视频信号.每一个调制器至少与一个视频输出
 关联, 这依赖于连接到调制器上RF连线的数量. 通过调用`VIDIOC_ENUMOUTPUT` ioctl返回的`v4l2_output`结构体中的`type`属性被设置为`V4l2_OUTPUT_TYPE_MODULATOR`,
@@ -26,7 +26,7 @@ ioctl 查询返回的`v4l2_tuner`结构体中包含了可用的信息状态信�
 注意, `VIDIOC_S_MODULATOR` 不会切换当前的调制器的, 即使数量不止一个. 使用哪一个调制器是由当前视频输出来独立决定的. 当设备有一个或是多个调制器时,驱动必须要支持所有的`ioctl`
 并且设置通过`VIDIOC_QUERYCAP`ioctl返回的`v4l2_capability`结构体中的`V4l2_CAP_MODULATOR`标记.
 
-####无线电频率####
+#### 无线电频率
 
 应用程序可以通过一个指向`v4l2_frequency`结构体的指针,使用`VIDIOC_G_FREQUENCY`和`VIDIOC_S_FREQUENCY` ioctl
 来获取或是设置调谐器或是调制器的频率. 这些 ioctl 使用方式就像控制TV或无线电一样. 驱动必须支持这两种ioctl 当调谐器和

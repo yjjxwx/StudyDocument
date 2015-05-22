@@ -1,4 +1,4 @@
-###用户控制###
+### 用户控制
 设备代表性的拥有一系列用户可设置的控制,如亮度,饱和度等等, 这些应当给用户呈现在图形界面上. 但是, 不同的设备会有不同的可控制项,
 甚至是不同的可能值的范围, 以及不同的值. `ioctl` 提供了信息和机制来创建一个很好的用户接口使得在所有的设备都能正确的工作.
 
@@ -22,7 +22,7 @@ V4L2定义了一套事件机制当控制的值发生改变时来通知应用程�
 
 所有的控制使用机器字节编码.
 
-####表1.1 控制ID####
+#### 表1.1 控制ID
 
 |ID|类型|描述|
 |:---|---:---|:---|
@@ -75,7 +75,7 @@ V4L2定义了一套事件机制当控制的值发生改变时来通知应用程�
 当设备有一个或是多个控制时, 驱动必须实现`VIDIOC_QUERYCTRL`,`VIDIOC_G_CTRL`,'VIDIOC_S_CTRL' ioctl, 当设备有一个或是多个菜单类型时,驱动必须实现
 `VIDIOC_QUERYMENU` ioctl.
 
-####例 1.8. 枚举所有的用户控制选项 ####
+#### 例 1.8. 枚举所有的用户控制选项 
 
 ```c
 struct v4l2_queryctrl queryctrl;
@@ -218,18 +218,6 @@ control.value = 1;
 ioctl(fd,VIDIOC_S_CTRL, &control);
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 [url_kelvin_color_temperature]:http://en.wikipedia.org/wiki/Color_temperature "Color Temperature"

@@ -1,4 +1,4 @@
-#Camera驱动部分学习记录#
+# Camera驱动部分学习记录
 摄像头驱动程序:通常基于Linux的Video for Linux 视频驱动框架.
 有关该框架的详细描述请点击查看 [Video For Linux][1] 的官方描述.
 
@@ -14,7 +14,7 @@
 
 下面的章节会对这四个文件进行详细的描述:
 
-* ##`v4l2-common.h`.这个文件里面定义了很多常量.##
+## `v4l2-common.h`.这个文件里面定义了很多常量.
 
 |标志                    |值|定义|
 |:---|:---|:---|
@@ -38,7 +38,9 @@
 |V4L2_SUBDEV_SEL_FLAG_SIZE_LE|V4L2_SEL_FLAG_LE|*待描述 已经过时*|
 |V4L2_SUBDEV_SEL_FLAG_KEEP_CONFIG|V4L2_SEL_FLAG_GE|*待描述 已经过时*|
 
-* ## `v4l2-controls.h`. 这个文件时定义了一系列的控制标志以及能力范围.下面会列出部分与Camera相关的控制标志以及能力范围 .##
+
+## `v4l2-controls.h` 这个文件时定义了一系列的控制标志以及能力范围.下面会列出部分与Camera相关的控制标志以及能力范围 .
+
 
 
     #define V4L2_CID_CAMERA_CLASS_BASE 	(V4L2_CTRL_CLASS_CAMERA | 0x900)
@@ -151,14 +153,13 @@
 上面的代码列出了V4L2框架对于Camera所支持的基本能力.其中包括了(曝光,聚焦,白平衡,调整焦距,虹膜识别(IRIS),
 HDR(4L2_CID_WIDE_DYNAMIC_RANGE), 防抖(STABILIZATION),ISO, 测光方式, 场景模式)
 
-* ##`videodev2.h`.
+## `videodev2.h`.
 楼主只能说,这里面定义了太多的数据结构和常量, 作为首次看的我, 表示已经被吓死啦啦啦....
 这个我处理不了了..看下个文件吧亲们..
 
 
-* ##`v4l2-dev.h`. 文件定义了视频设备的数据结构以及所支持的操作.
+## `v4l2-dev.h`. 文件定义了视频设备的数据结构以及所支持的操作.以下是视频设备的数据类型.
 
-以下是视频设备的数据类型.##
 其实现文件存放位置是:`/kernel/drivers/media/v4l2-core/v4l2-dev.c`
 
 
